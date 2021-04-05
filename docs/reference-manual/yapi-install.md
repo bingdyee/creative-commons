@@ -33,3 +33,26 @@ ln -s /usr/local/nodejs/bin/node /usr/local/bin/
 npm install -g yapi-cli --registry https://registry.npm.taobao.org
 
 yapi server
+
+node server/app.js &
+
+npm install -g pm2
+
+pm2 start /usr/local/yapi/vendors/server/app.js
+pm2 stop /usr/local/yapi/vendors/server/app.js
+
+vi /usr/lib/systemd/system/yapi.service
+
+[Unit]
+Description=yapi
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/local/nodejs/bin/pm2 start /usr/local/yapi/vendors/server/app.js
+ExecStop=/usr/local/nodejs/bin/pm2 stop /usr/local/yapi/vendors/server/app.js
+
+[Install]
+WantedBy=multi-user.target
+
+systemctl enable yapi
